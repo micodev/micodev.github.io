@@ -162,8 +162,9 @@ for (var i = 0; i < gridNum; i++) {
     if (block.isBomb) {
       alert("Game Over");
       for (var i = 0; i < blocks.length; i++) {
+        blocks[i].isChecked = true;
         if (blocks[i].isBomb) {
-          blocks[i].isChecked = true;
+          
           blockIcon = $("<i class='fas fa-bomb fa-lg'></i>");
           var bombElement = $("[data-index=" + i + "]");
           bombElement.append(blockIcon);
