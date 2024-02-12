@@ -1,9 +1,22 @@
+$(window).on("resize", function () {
+  var win = $(this); //this = window
+  var cellWidth = win.width() / gridNum;
+  var cellHeight = (win.height() - 70) / gridNum;
+  var min = Math.min(cellWidth, cellHeight);
+  var block = $(".square")
+  block.css({
+    height: min + "px",
+    width: min + "px"
+  })
+  console.log(cellHeight,cellWidth,min)
+});
+
 var blocks = [];
 var blockIndex = 0;
 var score = 0;
 var scoreElement = $(".score");
 scoreElement.text(score);
-var gridNum = 5;
+var gridNum = 10;
 // make 10x10 grid
 function showWinMessage() {
   var allChecked = true;
@@ -41,15 +54,19 @@ for (var i = 0; i < gridNum; i++) {
       isBomb: Math.random() > 0.75 ? true : false,
       isChecked: false,
     });
-    var block = $('<div class="col-2 square rounded"></div>');
+    var block = $('<div class="col-auto square rounded"></div>');
     // get available width and height then divide it by gridNum
-    var cellHeight = window.he
-    block.css("height", "50px");
-    block.css("width", "50px");
+    var cellWidth = $(window).width() / gridNum;
+    var cellHeight = ($(window).height() - 70) / gridNum;
+    var min = Math.min(cellWidth, cellHeight);
+    block.css({
+      height: min + "px",
+      width: min + "px"
+    })
     var data = blockIndex;
     blocks[data].index = data;
     data = blockIndex++;
-   
+
     block.attr("data-index", data);
 
     block.click(function () {
@@ -139,11 +156,7 @@ for (var i = 0; i < gridNum; i++) {
       for (var i = 0; i < blocks.length; i++) {
         if (blocks[i].isBomb) {
           blockIcon = $("<i class='fas fa-bomb fa-lg'></i>");
-          var bombElement =  $("[data-index=" + i + "]");
-          //check if bombElement already check then ignore
-          if (blocks[i].isChecked) {
-            continue;
-          }
+          var bombElement = $("[data-index=" + i + "]");
           bombElement.append(blockIcon);
           bombElement.css("background-color", "red");
           score = 0;
