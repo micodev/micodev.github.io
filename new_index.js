@@ -160,19 +160,27 @@ for (var i = 0; i < gridNum; i++) {
     $("[data-index=" + index + "]").addClass("open");
     //$("[data-index=" + index + "]").css("background-color", "white");
     if (block.isBomb) {
+      blocks[index].isChecked = false; // to prevent ignorance of current bomb
       alert("Game Over");
       for (var i = 0; i < blocks.length; i++) {
-        blocks[i].isChecked = true;
+      
         if (blocks[i].isBomb) {
-          
-          blockIcon = $("<i class='fas fa-bomb fa-lg'></i>");
-          var bombElement = $("[data-index=" + i + "]");
-          bombElement.append(blockIcon);
+          if(!blocks[i].isChecked){
+            blockIcon = $("<i class='fas fa-bomb fa-lg'></i>");
+            var bombElement = $("[data-index=" + i + "]");
+            bombElement.append(blockIcon);
+          }
+        
           bombElement.css("background-color", "red");
           score = 0;
           scoreElement.text(score);
         }
+        
       }
+      //check all blocks
+      blocks.forEach(function(e){
+        e.isChecked = true
+      })
       return;
     }
     score += 6;
