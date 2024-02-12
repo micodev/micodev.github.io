@@ -1,8 +1,11 @@
+
+
 $(window).on("resize", function () {
   var win = $(this); //this = window
   var cellWidth = win.width() / gridNum;
   var cellHeight = (win.height() - 70) / gridNum;
   var min = Math.min(cellWidth, cellHeight);
+  min = min - 5
   var block = $(".square")
   block.css({
     height: min + "px",
@@ -18,6 +21,30 @@ var scoreElement = $(".score");
 scoreElement.text(score);
 var gridNum = 8;
 // make 10x10 grid
+
+function onRightClick(block){
+  var index = block.data("index");
+  var singleBlock = blocks[index];
+  if (singleBlock.isChecked) {
+    return false;
+  }
+  singleBlock.isChecked = true;
+  singleBlock.color = "orange";
+  block.css("background-color", "orange");
+  // if bomb then show bomb icon
+  if (singleBlock.isBomb) {
+    blockIcon = $("<i class='fas fa-bomb fa-lg'></i>");
+    block.append(blockIcon);
+    block.css("background-color", "red");
+    score += 50;
+    scoreElement.text(score);
+  } else {
+    if (score - 50 > 0) score -= 50;
+    else score = 0;
+    scoreElement.text(score);
+  }
+  showWinMessage();
+}
 function showWinMessage() {
   var allChecked = true;
   for (var i = 0; i < blocks.length; i++) {
@@ -59,6 +86,7 @@ for (var i = 0; i < gridNum; i++) {
     var cellWidth = $(window).width() / gridNum;
     var cellHeight = ($(window).height() - 70) / gridNum;
     var min = Math.min(cellWidth, cellHeight);
+    min = min - 5
     block.css({
       height: min + "px",
       width: min + "px"
@@ -82,27 +110,7 @@ for (var i = 0; i < gridNum; i++) {
     });
     // if right click then change color to orange
     block.on("contextmenu", function () {
-      var index = $(this).data("index");
-      var singleBlock = blocks[index];
-      if (singleBlock.isChecked) {
-        return false;
-      }
-      singleBlock.isChecked = true;
-      singleBlock.color = "orange";
-      $(this).css("background-color", "orange");
-      // if bomb then show bomb icon
-      if (singleBlock.isBomb) {
-        blockIcon = $("<i class='fas fa-bomb fa-lg'></i>");
-        $(this).append(blockIcon);
-        $(this).css("background-color", "red");
-        score += 50;
-        scoreElement.text(score);
-      } else {
-        if (score - 50 > 0) score -= 50;
-        else score = 0;
-        scoreElement.text(score);
-      }
-      showWinMessage();
+      onRightClick($(this))
       return false;
     });
     row.prepend(block);
