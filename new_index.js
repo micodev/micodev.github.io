@@ -3,7 +3,7 @@ var blockIndex = 0;
 var score = 0;
 var scoreElement = $(".score");
 scoreElement.text(score);
-var gridNum = 20;
+var gridNum = 5;
 // make 10x10 grid
 function showWinMessage() {
   var allChecked = true;
@@ -42,7 +42,8 @@ for (var i = 0; i < gridNum; i++) {
       isChecked: false,
     });
     var block = $('<div class="col-2 square rounded"></div>');
-    // make square div
+    // get available width and height then divide it by gridNum
+    //var cellHeight = 
     block.css("height", "50px");
     block.css("width", "50px");
     var data = blockIndex;
