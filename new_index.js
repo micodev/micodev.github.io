@@ -20,6 +20,7 @@ var score = 0;
 var scoreElement = $(".score");
 scoreElement.text(score);
 var gridNum = 8;
+var bombNumber = 10
 // make 10x10 grid
 
 function onRightClick(block){
@@ -74,13 +75,15 @@ for (var i = 0; i < gridNum; i++) {
     '<div class="row justify-content-center align-items-center"></div>'
   );
   for (var j = 0; j < gridNum; j++) {
+    
     blocks.push({
       x: i,
       y: j,
       color: "gray",
-      isBomb: Math.random() > 0.75 ? true : false,
+      isBomb: false,
       isChecked: false,
     });
+
     var block = $('<div class="col-auto square rounded"></div>');
     // get available width and height then divide it by gridNum
     var cellWidth = $(window).width() / gridNum;
@@ -115,6 +118,10 @@ for (var i = 0; i < gridNum; i++) {
     });
     row.prepend(block);
   }
+  // bombNumber>0?true:false,
+  // bombNumber--;
+  // set 10 bombs randomly
+  
   $(".body-game").append(row);
 
   //check 4 Neighbour and return its indexes as x,y
@@ -216,5 +223,15 @@ for (var i = 0; i < gridNum; i++) {
         }
       }
     }
+  }
+}
+
+for(var k=0;k<bombNumber;k++){
+  var randIndex = Math.floor(Math.random() * blocks.length)
+  var block = blocks[randIndex]
+  if(block.isBomb == true){
+    k--;
+  }else{
+    blocks[randIndex].isBomb = true
   }
 }
