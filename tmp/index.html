@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3/dist/css/bootstrap.rtl.min.css"
+      rel="stylesheet"
+    />
+    <!-- fontawesome -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="index.css" />
+    <title>Title</title>
+  </head>
+  <body
+    class="container-fluid body row justify-content-center align-content-center"
+  >
+  
+    <div class="body-game"></div>
+    <!-- jquery latest -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script>
+      // game algorithm
+
+      var blocks = [];
+      // make empty blocks 10 x 10
+      for (var i = 0; i < 10; i++) {
+        blocks[i] = [];
+        for (var j = 0; j < 10; j++) {
+          blocks[i][j] = 0;
+        }
+      }
+      // add 10 bombs
+      while (true) {
+        var row = Math.floor(Math.random() * 10);
+        var col = Math.floor(Math.random() * 10);
+        if (blocks[row][col] === 0) {
+          blocks[row][col] = 1;
+
+          if (blocks.flat().filter((block) => block === 1).length === 1) {
+            break;
+          }
+        }
+      }
+      var checking = 0;
+      // convert blocks to row and col using bootstraps
+      var blockIcon = $("<i class='fas fa-square fa-lg'></i>");
+      var count = 1;
+
+      for (var i = 9; i >= 0; i--) {
+        var row = $("<div class='row justify-content-center g-0'></div>");
+        for (var j = 0; j < 10; j++) {
+          var block = blocks[i][j];
+
+          var col = $("<div class='col-2 square rounded '></div>");
+          if (block === 1) {
+            col.attr("data-bomb", true);
+            // blockIcon = $("<i class='fas fa-bomb fa-lg'></i>");
+            // col.append(blockIcon.clone());
+          } else {
+            col.attr("data-bomb", false);
+            col.attr("is-checked", false);
+            // col.text(`${i},${j}`);
+            //blockIcon = $("<i class='fas fa-square fa-lg'></i>");
+          }
+          col.attr("id", 100 - count++);
+          col.attr("data-row", i);
+          col.attr("data-col", j);
+
+          row.append(col);
+        }
+        $(".body-game").prepend(row);
+        //function check nighbors nine blocks from center
+        $(".square").click(function () {
+          var row = $(this).data("row");
+          var col = $(this).data("col");
+          var id = $(this).attr("id");
+          var bomb = $(this).data("bomb");
+          if (bomb) {
+            console.log("Game Over");
+            $(".square").each(function () {
+              if ($(this).data("bomb")) {
+                $(this).html("<i class='fas fa-bomb fa-lg'></i>");
+              }
+            });
+          } else {
+            var count = 0;
+            for (var i = row - 1; i <= row + 1; i++) {
+              for (var j = col - 1; j <= col + 1; j++) {
+                if (i >= 0 && i < 10 && j >= 0 && j < 10) {
+                  console.log(i, j);
+                  if ($(`[data-row=${i}][data-col=${j}]`).data("bomb")) {
+                    count++;
+                  }
+                }
+              }
+            }
+
+            if (count === 0) {
+              $(this).addClass("bg-light");
+              $(this).css("color", "blue");
+              checking = 0;
+              checkNeighbors(row, col);
+              // if element with is-checked = true equal or greater than 99 u win
+            } else {
+              $(this).html(count);
+              $(this).addClass("bg-light");
+            }
+          }
+          
+        });
+      }
+
+      function checkNeighbors(row, col, onlyFourNeighbor = false) {
+        if (checking > 50) {
+          if ($("[is-checked=true]").length >= 99) {
+            $("body").append("<h1>U Win</h1>");
+          }
+          return;
+        }
+        checking++;
+        for (var i = row - 1; i <= row + 1; i++) {
+          for (var j = col - 1; j <= col + 1; j++) {
+            if (i >= 0 && i < 10 && j >= 0 && j < 10) {
+              $(`[data-row=${i}][data-col=${j}]`).css("color", "orange");
+              $(`[data-row=${i}][data-col=${j}]`).attr("is-checked", true);
+              if ($(`[data-row=${i}][data-col=${j}]`).data("bomb")) {
+                continue;
+              }
+              if ($(`[data-row=${i}][data-col=${j}]`)) {
+                var count = 0;
+                for (var x = i - 1; x <= i + 1; x++) {
+                  for (var y = j - 1; y <= j + 1; y++) {
+                    if (x >= 0 && x < 10 && y >= 0 && y < 10) {
+                      if ($(`[data-row=${x}][data-col=${y}]`).data("bomb")) {
+                        count++;
+                      }
+                    }
+                  }
+                }
+                if (count === 0) {
+                  $(`[data-row=${i}][data-col=${j}]`).addClass("bg-light");
+                  // remove text
+                  $(`[data-row=${i}][data-col=${j}]`).html("");
+                  checkNeighbors(i, j, true);
+                } else {
+                  $(`[data-row=${i}][data-col=${j}]`).addClass("bg-light");
+                  $(`[data-row=${i}][data-col=${j}]`).html(count);
+                }
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
