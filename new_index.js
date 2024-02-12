@@ -66,9 +66,9 @@ function openBlock(index) {
     alert("Game Over");
     for (var i = 0; i < blocks.length; i++) {
       if (blocks[i].isBomb) {
+        var bombElement = $("[data-index=" + i + "]");
         if (!blocks[i].isChecked) {
           blockIcon = $("<i class='fas fa-bomb fa-lg'></i>");
-          var bombElement = $("[data-index=" + i + "]");
           bombElement.append(blockIcon);
         }
 
