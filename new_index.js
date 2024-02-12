@@ -43,7 +43,7 @@ for (var i = 0; i < gridNum; i++) {
     });
     var block = $('<div class="col-2 square rounded"></div>');
     // get available width and height then divide it by gridNum
-    //var cellHeight = 
+    var cellHeight = window
     block.css("height", "50px");
     block.css("width", "50px");
     var data = blockIndex;
