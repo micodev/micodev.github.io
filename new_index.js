@@ -1,26 +1,131 @@
-// end long press
-$(window).on("resize", function () {
-  var win = $(this); //this = window
+function onResize() {
+  var win = $(window); //this = window
   var cellWidth = win.width() / gridNum;
   var cellHeight = (win.height() - 70) / gridNum;
   var min = Math.min(cellWidth, cellHeight);
-  min = min - 5;
+  min = min - 10;
   var block = $(".square");
   block.css({
     height: min + "px",
     width: min + "px",
   });
-  console.log(cellHeight, cellWidth, min);
-});
+  $(".square").css("font-size", "medium");
+  var w1 = $(".square").width() - 10;
+  var w2 = $(".square").height() - 10;
+  var wRatio = Math.round((w1 / w2) * 10) / 10;
+  wRatio = wRatio < 0.3 ? 0.4 : wRatio;
+  if (wRatio <= 0.4) {
+    $(".square").css("margin", "2px");
+  } else {
+    $(".square").css("margin", "5px");
+  }
+  wRatio = wRatio * 3;
+  $(".square").css("font-size", wRatio + "em");
+}
+$(window).on("resize", onResize);
+//check 4 Neighbour and return its indexes as x,y
+function check4Neighbour(index) {
+  var block = blocks[index];
+  var x = block.x;
+  var y = block.y;
 
-var blocks = [];
-var blockIndex = 0;
-var score = 0;
-var scoreElement = $(".score");
-scoreElement.text(score);
-var gridNum = 8;
-var bombNumber = 10;
-// make 10x10 grid
+  var neighbour = blocks.filter(function (b) {
+    return (
+      (b.x == x - 1 && b.y == y) ||
+      (b.x == x && b.y == y - 1) ||
+      (b.x == x + 1 && b.y == y) ||
+      (b.x == x && b.y == y + 1)
+    );
+  });
+
+  return neighbour;
+}
+function check8Neighbour(index) {
+  var block = blocks[index];
+  var x = block.x;
+  var y = block.y;
+
+  var neighbour = blocks.filter(function (b) {
+    return (
+      (b.x == x && b.y == y) ||
+      (b.x == x + 1 && b.y == y) ||
+      (b.x == x + 1 && b.y == y - 1) ||
+      (b.x == x && b.y == y - 1) ||
+      (b.x == x - 1 && b.y == y - 1) ||
+      (b.x == x - 1 && b.y == y) ||
+      (b.x == x - 1 && b.y == y + 1) ||
+      (b.x == x && b.y == y + 1) ||
+      (b.x == x + 1 && b.y == y + 1)
+    );
+  });
+  return neighbour;
+}
+
+// change color of neighbour blocks who not bomb and recursive open if its not bomb for its neighbour4
+function openBlock(index) {
+  var block = blocks[index];
+  $("[data-index=" + index + "]").addClass("open");
+  //$("[data-index=" + index + "]").css("background-color", "white");
+  if (block.isBomb) {
+    blocks[index].isChecked = false; // to prevent ignorance of current bomb
+    alert("Game Over");
+    for (var i = 0; i < blocks.length; i++) {
+      if (blocks[i].isBomb) {
+        if (!blocks[i].isChecked) {
+          blockIcon = $("<i class='fas fa-bomb fa-lg'></i>");
+          var bombElement = $("[data-index=" + i + "]");
+          bombElement.append(blockIcon);
+        }
+
+        bombElement.css("background-color", "red");
+        score = 0;
+        scoreElement.text(score);
+      }
+    }
+    //check all blocks
+    blocks.forEach(function (e) {
+      e.isChecked = true;
+    });
+    return;
+  }
+  score += 6;
+  scoreElement.text(score);
+  // var neighbour4 = check8Neighbour(index);
+  var neighbour8 = check8Neighbour(index);
+  var neighbour4 = neighbour8;
+  // if neighbour8 has bomb then show number of bomb in same block
+  var count = 0;
+  neighbour8.forEach(function (b) {
+    if (b.isBomb) {
+      count++;
+    }
+  });
+  if (count > 0 && !block.isChecked) {
+    block.isChecked = true;
+    $("[data-index=" + index + "]").text(count);
+    showWinMessage();
+    return;
+  }
+
+  for (var i = 0; i < neighbour4.length; i++) {
+    var b = neighbour4[i];
+    var neighbourBlock = $("[data-index=" + b.index + "]");
+
+    if (!b.isBomb && !b.isChecked) {
+      blocks[index].isChecked = true;
+      var checkifhasNumber = neighbourBlock.text();
+
+      if (checkifhasNumber == "") {
+        b.color = "white";
+        openBlock(b.index);
+      }
+      //TODO:// CHECK IF NOT HAS NUMBER
+      // else {
+      //   showWinMessage();
+      // }
+    }
+  }
+}
 
 function onRightClick(block) {
   var index = block.data("index");
@@ -89,170 +194,93 @@ function showWinMessage() {
 
   return;
 }
-for (var i = 0; i < gridNum; i++) {
-  var row = $(
-    '<div class="row justify-content-center align-items-center"></div>'
-  );
-  for (var j = 0; j < gridNum; j++) {
-    blocks.push({
-      x: i,
-      y: j,
-      color: "gray",
-      isBomb: false,
-      isChecked: false,
-    });
 
-    var block = $('<div class="col-auto square rounded"></div>');
-    // get available width and height then divide it by gridNum
-    var cellWidth = $(window).width() / gridNum;
-    var cellHeight = ($(window).height() - 70) / gridNum;
-    var min = Math.min(cellWidth, cellHeight);
-    min = min - 5;
-    block.css({
-      height: min + "px",
-      width: min + "px",
-    });
-    var data = blockIndex;
-    blocks[data].index = data;
-    data = blockIndex++;
+var blocks = [];
+var blockIndex = 0;
+var score = 0;
+var scoreElement = $(".score");
+scoreElement.text(score);
+var gridNum = 8;
+var bombNumber = 10;
 
-    block.attr("data-index", data);
-    block.longpress(
-      function () {
+function setup() {
+  for (var i = 0; i < gridNum; i++) {
+    var row = $(
+      '<div class="row justify-content-center align-items-center"></div>'
+    );
+    for (var j = 0; j < gridNum; j++) {
+      blocks.push({
+        x: i,
+        y: j,
+        color: "gray",
+        isBomb: false,
+        isChecked: false,
+      });
+
+      var block = $('<div class="col-auto square rounded"></div>');
+      // get available width and height then divide it by gridNum
+      var cellWidth = $(window).width() / gridNum;
+      var cellHeight = ($(window).height() - 70) / gridNum;
+      var min = Math.min(cellWidth, cellHeight);
+      min = min - 2;
+      block.css({
+        height: min + "px",
+        width: min + "px",
+      });
+      var data = blockIndex;
+      blocks[data].index = data;
+      data = blockIndex++;
+
+      block.attr("data-index", data);
+      block
+        .longpress(
+          function () {
+            onRightClick($(this));
+            return false;
+          },
+          function () {
+            onLeftClick($(this));
+          }
+        )
+        .on("contextmenu", function () {
+          onRightClick($(this));
+          return false;
+        });
+      //block hover scale
+      block.hover(
+        function () {
+          $(this).css("transform", "scale(1.1)");
+        },
+        function () {
+          $(this).css("transform", "scale(1)");
+        }
+      );
+
+      // if right click then change color to orange
+      block.on("contextmenu", function () {
         onRightClick($(this));
         return false;
-      },
-      function () {
-        onLeftClick($(this));
-      }
-    );
-
-    // if right click then change color to orange
-    block.on("contextmenu", function () {
-      onRightClick($(this));
-      return false;
-    });
-    row.prepend(block);
-  }
-  // bombNumber>0?true:false,
-  // bombNumber--;
-  // set 10 bombs randomly
-
-  $(".body-game").append(row);
-
-  //check 4 Neighbour and return its indexes as x,y
-  function check4Neighbour(index) {
-    var block = blocks[index];
-    var x = block.x;
-    var y = block.y;
-
-    var neighbour = blocks.filter(function (b) {
-      return (
-        (b.x == x - 1 && b.y == y) ||
-        (b.x == x && b.y == y - 1) ||
-        (b.x == x + 1 && b.y == y) ||
-        (b.x == x && b.y == y + 1)
-      );
-    });
-
-    return neighbour;
-  }
-  function check8Neighbour(index) {
-    var block = blocks[index];
-    var x = block.x;
-    var y = block.y;
-
-    var neighbour = blocks.filter(function (b) {
-      return (
-        (b.x == x && b.y == y) ||
-        (b.x == x + 1 && b.y == y) ||
-        (b.x == x + 1 && b.y == y - 1) ||
-        (b.x == x && b.y == y - 1) ||
-        (b.x == x - 1 && b.y == y - 1) ||
-        (b.x == x - 1 && b.y == y) ||
-        (b.x == x - 1 && b.y == y + 1) ||
-        (b.x == x && b.y == y + 1) ||
-        (b.x == x + 1 && b.y == y + 1)
-      );
-    });
-    return neighbour;
-  }
-
-  // change color of neighbour blocks who not bomb and recursive open if its not bomb for its neighbour4
-  function openBlock(index) {
-    var block = blocks[index];
-    $("[data-index=" + index + "]").addClass("open");
-    //$("[data-index=" + index + "]").css("background-color", "white");
-    if (block.isBomb) {
-      blocks[index].isChecked = false; // to prevent ignorance of current bomb
-      alert("Game Over");
-      for (var i = 0; i < blocks.length; i++) {
-        if (blocks[i].isBomb) {
-          if (!blocks[i].isChecked) {
-            blockIcon = $("<i class='fas fa-bomb fa-lg'></i>");
-            var bombElement = $("[data-index=" + i + "]");
-            bombElement.append(blockIcon);
-          }
-
-          bombElement.css("background-color", "red");
-          score = 0;
-          scoreElement.text(score);
-        }
-      }
-      //check all blocks
-      blocks.forEach(function (e) {
-        e.isChecked = true;
       });
-      return;
+      row.prepend(block);
     }
-    score += 6;
-    scoreElement.text(score);
-    // var neighbour4 = check8Neighbour(index);
-    var neighbour8 = check8Neighbour(index);
-    var neighbour4 = neighbour8;
-    console.log(neighbour8);
-    // if neighbour8 has bomb then show number of bomb in same block
-    var count = 0;
-    neighbour8.forEach(function (b) {
-      if (b.isBomb) {
-        count++;
-      }
-    });
-    console.log(count, count > 0 && !block.isChecked);
-    if (count > 0 && !block.isChecked) {
-      block.isChecked = true;
-      $("[data-index=" + index + "]").text(count);
-      showWinMessage();
-      return;
-    }
+    // bombNumber>0?true:false,
+    // bombNumber--;
+    // set 10 bombs randomly
 
-    for (var i = 0; i < neighbour4.length; i++) {
-      var b = neighbour4[i];
-      var neighbourBlock = $("[data-index=" + b.index + "]");
+    $(".body-game").append(row);
+  }
 
-      if (!b.isBomb && !b.isChecked) {
-        blocks[index].isChecked = true;
-        var checkifhasNumber = neighbourBlock.text();
-
-        if (checkifhasNumber == "") {
-          b.color = "white";
-          openBlock(b.index);
-        }
-        //TODO:// CHECK IF NOT HAS NUMBER
-        // else {
-        //   showWinMessage();
-        // }
-      }
+  for (var k = 0; k < bombNumber; k++) {
+    var randIndex = Math.floor(Math.random() * blocks.length);
+    var block = blocks[randIndex];
+    if (block.isBomb == true) {
+      k--;
+    } else {
+      blocks[randIndex].isBomb = true;
     }
   }
+
+  onResize();
 }
 
-for (var k = 0; k < bombNumber; k++) {
-  var randIndex = Math.floor(Math.random() * blocks.length);
-  var block = blocks[randIndex];
-  if (block.isBomb == true) {
-    k--;
-  } else {
-    blocks[randIndex].isBomb = true;
-  }
-}
+setup();

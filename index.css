@@ -1,3 +1,8 @@
+@font-face {
+    font-family: 'digital-7';
+    src: url('digital-7.ttf') format('truetype');
+}
+
 html{
     height: 100vh;
 }
@@ -6,8 +11,8 @@ html{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Roboto', sans-serif;
-    font-size: 1.4rem;
+    font-family: 'digital-7';
+    /*font-size: 1.4rem;*/
 }
 
 body {
@@ -19,7 +24,7 @@ i{
 }
 .square{
    
-    margin: 1px;
+    margin: 5px;
     background-color: rgb(86, 91, 95);
 	display: flex;
 	flex-direction: row;

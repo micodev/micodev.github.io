@@ -19,10 +19,23 @@
     class="container-fluid body g-0 justify-content-center align-content-center"
   >
     <!-- score -->
-    <div class="col">
-      <div class="row justify-content-center">
+    <div class="col-10 mt-2" dir="rtl">
+      <div class="row">
         <div class="col-auto">
           <h1>Score: <span class="score">0</span></h1>
+        </div>
+        <!-- bomb number input -->
+        <div class="col-auto">
+          <div class="input-group">
+            <span class="input-group-text">Bomb Number</span>
+            <input
+              type="number"
+              class="form-control bomb-number"
+              value="10"
+              min="1"
+              max="100"
+            />
+          </div>
         </div>
       </div>
     </div>
