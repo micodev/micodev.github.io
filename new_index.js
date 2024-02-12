@@ -16,7 +16,7 @@ var blockIndex = 0;
 var score = 0;
 var scoreElement = $(".score");
 scoreElement.text(score);
-var gridNum = 10;
+var gridNum = 8;
 // make 10x10 grid
 function showWinMessage() {
   var allChecked = true;
