@@ -56,6 +56,8 @@ function showWinMessage() {
   }
   if (allChecked) {
     alert("You Win");
+    blocks.forEach(function(b){b.isChecked=true})
+    return;
   }
   // if all bombs are checked then show win message
   var allBombsChecked = true;
@@ -67,7 +69,10 @@ function showWinMessage() {
   }
   if (allBombsChecked) {
     alert("You Win");
+    blocks.forEach(function(b){b.isChecked=true})
+    return;
   }
+  
   return;
 }
 for (var i = 0; i < gridNum; i++) {
