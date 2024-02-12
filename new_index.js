@@ -1,7 +1,7 @@
 function onResize() {
   var win = $(window); //this = window
-  var cellWidth = win.width() / gridNum;
-  var cellHeight = (win.height() - 70) / gridNum;
+  var cellWidth = win.innerWidth() / gridNum;
+  var cellHeight = (win.innerHeight() - 70) / gridNum;
   var min = Math.min(cellWidth, cellHeight);
   min = min - 10;
   var block = $(".square");
@@ -10,16 +10,11 @@ function onResize() {
     width: min + "px",
   });
   $(".square").css("font-size", "medium");
-  var w1 = $(".square").width() - 10;
-  var w2 = $(".square").height() - 10;
+  var w1 = $(".square").innerWidth() - 10;
+  var w2 = $(".square").innerHeight() - 10;
   var wRatio = Math.round((w1 / w2) * 10) / 10;
   wRatio = wRatio < 0.3 ? 0.4 : wRatio;
-  if (wRatio <= 0.4) {
-    $(".square").css("margin", "2px");
-  } else {
-    $(".square").css("margin", "5px");
-  }
-  wRatio = wRatio * 3;
+  wRatio = wRatio * 1.0;
   $(".square").css("font-size", wRatio + "em");
 }
 $(window).on("resize", onResize);
@@ -195,15 +190,28 @@ function showWinMessage() {
   return;
 }
 
-var blocks = [];
-var blockIndex = 0;
-var score = 0;
-var scoreElement = $(".score");
-scoreElement.text(score);
-var gridNum = 8;
-var bombNumber = 10;
-
+var blocks;
+var blockIndex;
+var score;
+var scoreElement;
+var gridNum;
+var bombNumber;
+$(".bomb-number").on("input", function () {
+  setup();
+});
+$(".grid-number").on("input", function () {
+  setup();
+});
 function setup() {
+  $(".body-game").empty();
+  blocks = [];
+  blockIndex = 0;
+  score = 0;
+  scoreElement = $(".score");
+  scoreElement.text(score);
+  gridNum = $(".grid-number").val();
+  bombNumber = $(".bomb-number").val();
+
   for (var i = 0; i < gridNum; i++) {
     var row = $(
       '<div class="row justify-content-center align-items-center"></div>'
@@ -219,14 +227,14 @@ function setup() {
 
       var block = $('<div class="col-auto square rounded"></div>');
       // get available width and height then divide it by gridNum
-      var cellWidth = $(window).width() / gridNum;
-      var cellHeight = ($(window).height() - 70) / gridNum;
-      var min = Math.min(cellWidth, cellHeight);
-      min = min - 2;
-      block.css({
-        height: min + "px",
-        width: min + "px",
-      });
+      // var cellWidth = $(window).width() / gridNum;
+      // var cellHeight = $(window).height() / gridNum;
+      // var min = Math.min(cellWidth, cellHeight);
+      // min = min - 100;
+      // block.css({
+      //   height: min + "px",
+      //   width: min + "px",
+      // });
       var data = blockIndex;
       blocks[data].index = data;
       data = blockIndex++;
@@ -269,7 +277,9 @@ function setup() {
 
     $(".body-game").append(row);
   }
-
+  if (bombNumber > gridNum * gridNum) {
+    bombNumber = gridNum * gridNum;
+  }
   for (var k = 0; k < bombNumber; k++) {
     var randIndex = Math.floor(Math.random() * blocks.length);
     var block = blocks[randIndex];
