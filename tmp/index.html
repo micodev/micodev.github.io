@@ -28,7 +28,7 @@
     <script>
       // game algorithm
 
-      var blocks = [];
+      var blocks = []; 
       // make empty blocks 10 x 10
       for (var i = 0; i < 10; i++) {
         blocks[i] = [];
@@ -60,7 +60,7 @@
 
           var col = $("<div class='col-2 square rounded '></div>");
           if (block === 1) {
-            col.attr("data-bomb", true);
+            col.attr("data-bomb", true); 
             // blockIcon = $("<i class='fas fa-bomb fa-lg'></i>");
             // col.append(blockIcon.clone());
           } else {

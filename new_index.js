@@ -83,6 +83,7 @@ function openBlock(index) {
     });
     return;
   }
+
   score += 6;
   scoreElement.text(score);
   // var neighbour4 = check8Neighbour(index);
@@ -95,6 +96,7 @@ function openBlock(index) {
       count++;
     }
   });
+
   if (count > 0 && !block.isChecked) {
     block.isChecked = true;
     $("[data-index=" + index + "]").text(count);
@@ -121,8 +123,14 @@ function openBlock(index) {
     }
   }
 }
-
-function onRightClick(block) {
+function isNormalFlag(block){
+  var index = block.data("index");
+  var singleBlock = blocks[index];
+  //toggle orange color
+  singleBlock.color = singleBlock.color == "orange" ? "white" : "orange"
+  block.css("background-color", singleBlock.color)
+}
+function isHintFlag(block){
   var index = block.data("index");
   var singleBlock = blocks[index];
   if (singleBlock.isChecked) {
@@ -144,6 +152,17 @@ function onRightClick(block) {
     scoreElement.text(score);
   }
   showWinMessage();
+}
+$(".hint-enabled").on("change",function(){
+  var isChecked = $(this).is(":checked")
+})
+function onRightClick(block) {
+  var isChecked = $(".hint-enabled").is(":checked")
+  if(isChecked){
+    isHintFlag(block)
+  }else{
+    isNormalFlag(block)
+  }
 }
 function onLeftClick(block) {
   var index = block.data("index");
@@ -179,6 +198,7 @@ function showWinMessage() {
       break;
     }
   }
+
   if (allBombsChecked) {
     alert("You Win");
     blocks.forEach(function (b) {
@@ -230,15 +250,6 @@ function setup() {
       });
 
       var block = $('<div class="col-auto square rounded"></div>');
-      // get available width and height then divide it by gridNum
-      // var cellWidth = $(window).width() / gridNum;
-      // var cellHeight = $(window).height() / gridNum;
-      // var min = Math.min(cellWidth, cellHeight);
-      // min = min - 100;
-      // block.css({
-      //   height: min + "px",
-      //   width: min + "px",
-      // });
       var data = blockIndex;
       blocks[data].index = data;
       data = blockIndex++;
