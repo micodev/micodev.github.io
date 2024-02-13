@@ -250,10 +250,7 @@ function setup() {
             onLeftClick($(this));
           }
         )
-        .on("contextmenu", function () {
-          onRightClick($(this));
-          return false;
-        });
+       
       //block hover scale
       block.hover(
         function () {

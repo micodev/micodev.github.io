@@ -15,9 +15,9 @@ html{
     /*font-size: 1.4rem;*/
 }
 
-body {
-    min-height: 100vh;
-}
+/* body {
+    min-height: 100%;
+} */
 
 i{
     color: rgb(249, 243, 64);
