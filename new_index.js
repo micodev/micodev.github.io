@@ -196,10 +196,14 @@ var score;
 var scoreElement;
 var gridNum;
 var bombNumber;
+$(".bomb-number").val(localStorage.getItem("bombNumber")??10);
+$(".grid-number").val(localStorage.getItem("gridNum")??10);
 $(".bomb-number").on("input", function () {
+  localStorage.setItem("bombNumber", $(".bomb-number").val());
   setup();
 });
 $(".grid-number").on("input", function () {
+  localStorage.setItem("gridNum", $(".grid-number").val());
   setup();
 });
 function setup() {
@@ -209,8 +213,8 @@ function setup() {
   score = 0;
   scoreElement = $(".score");
   scoreElement.text(score);
-  gridNum = $(".grid-number").val();
-  bombNumber = $(".bomb-number").val();
+  gridNum = localStorage.getItem("gridNum") ?? 10;
+  bombNumber = localStorage.getItem("bombNumber")??10;
 
   for (var i = 0; i < gridNum; i++) {
     var row = $(
@@ -248,7 +252,8 @@ function setup() {
           },
           function () {
             onLeftClick($(this));
-          }
+          },
+          250
         )
        
       //block hover scale
