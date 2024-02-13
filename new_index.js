@@ -196,14 +196,14 @@ var score;
 var scoreElement;
 var gridNum;
 var bombNumber;
-$(".bomb-number").val(localStorage.getItem("bombNumber")??10);
-$(".grid-number").val(localStorage.getItem("gridNum")??10);
+$(".bomb-number").val(Cookies.get("bombNumber")??10);
+$(".grid-number").val(Cookies.get("gridNum")??10);
 $(".bomb-number").on("input", function () {
-  localStorage.setItem("bombNumber", $(".bomb-number").val());
+  Cookies.set("bombNumber", $(".bomb-number").val());
   setup();
 });
 $(".grid-number").on("input", function () {
-  localStorage.setItem("gridNum", $(".grid-number").val());
+  Cookies.set("gridNum", $(".grid-number").val());
   setup();
 });
 function setup() {
@@ -213,8 +213,8 @@ function setup() {
   score = 0;
   scoreElement = $(".score");
   scoreElement.text(score);
-  gridNum = localStorage.getItem("gridNum") ?? 10;
-  bombNumber = localStorage.getItem("bombNumber")??10;
+  gridNum = Cookies.get("gridNum") ?? 10;
+  bombNumber = Cookies.get("bombNumber")??10;
 
   for (var i = 0; i < gridNum; i++) {
     var row = $(
